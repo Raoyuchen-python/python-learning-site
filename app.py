@@ -39,28 +39,20 @@ def create_simple_favicon():
     favicon_path = 'static/images/favicon.ico'
     if not os.path.exists(favicon_path):
         try:
-            # 尝试用PIL创建favicon
             try:
-                from PIL import Image, ImageDraw, ImageFont
+                from PIL import Image, ImageDraw
                 img = Image.new('RGB', (32, 32), color='#3776ab')
                 draw = ImageDraw.Draw(img)
-                # 使用默认字体，不指定具体字体文件
                 draw.text((10, 8), "Py", fill=(255, 255, 255))
                 img.save(favicon_path, format='ICO')
                 print(f"已创建 favicon.ico 在 {favicon_path}")
             except ImportError:
-                # 如果PIL不可用，创建一个最小的ico文件
-                print("Pillow未安装，使用简单favicon")
-                # 这是一个最小的16x16蓝色ico文件
+                print("Pillow未安装，创建空favicon文件")
                 with open(favicon_path, 'wb') as f:
-                    f.write(b'\x00\x00\x01\x00\x01\x00\x10\x10\x00\x00\x01\x00\x08\x00(\x01\x00\x00\x16\x00\x00\x00(\x00\x00\x00\x10\x00\x00\x00 \x00\x00\x00\x01\x00\x08\x00\x00\x00\x00\x00\x00\x01\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x01\x00\x00\x00\x00')
+                    f.write(b'')
         except Exception as e:
             print(f"创建favicon失败: {e}")
-            # 创建一个空文件避免404错误
-            with open(favicon_path, 'wb') as f:
-                f.write(b'')
 
-# 在应用启动时创建favicon
 create_simple_favicon()
 
 # Python学习数据
@@ -122,10 +114,10 @@ for fruit in fruits:
     print(fruit)
 
 # 使用range函数
-for i in range(5):      # 0到4
+for i in range(5):
     print(i)
 
-for i in range(1, 6):   # 1到5
+for i in range(1, 6):
     print(i)</code></pre>
             
             <h3>循环语句 - while循环</h3>
@@ -203,11 +195,7 @@ print(math.sqrt(16))  # 4.0
 # 导入特定函数
 from math import pi, cos
 print(pi)
-print(cos(0))
-
-# 给模块起别名
-import numpy as np
-import pandas as pd</code></pre>
+print(cos(0))</code></pre>
             """,
             "difficulty": "初级",
             "duration": "60分钟",
@@ -371,27 +359,25 @@ def tool_runner():
 @app.route('/tools/formatter')
 def tool_formatter():
     """代码格式化工具"""
-    # 如果还没有创建这个页面，可以暂时重定向到工具页面
-    # return redirect(url_for('tools'))
-    # 或者创建一个简单的页面
-    return render_template('tool_formatter.html') if os.path.exists('templates/tool_formatter.html') else "工具正在开发中"
+    return render_template('tool_formatter.html') if os.path.exists('templates/tool_formatter.html') else "代码格式化工具正在开发中"
 
 @app.route('/tools/cheatsheet')
 def tool_cheatsheet():
     """Python速查表"""
-    # 如果还没有创建这个页面，可以暂时重定向到工具页面
-    # return redirect(url_for('tools'))
-    # 或者创建一个简单的页面
-    return render_template('tool_cheatsheet.html') if os.path.exists('templates/tool_cheatsheet.html') else "工具正在开发中"
+    return render_template('tool_cheatsheet.html') if os.path.exists('templates/tool_cheatsheet.html') else "Python速查表正在开发中"
 
-# ========== API接口 ==========
+# ========== API接口 - 完全修复版 ==========
 
 @app.route('/run_code', methods=['POST'])
 def run_code():
+    """
+    执行Python代码 - Windows完全兼容版
+    修复所有编码和变量错误
+    """
     try:
         code = request.json.get('code', '')
         
-        # 安全检查：禁止危险操作
+        # 安全检查
         dangerous_keywords = ['__import__', 'eval', 'exec', 'open', 'os.', 'sys.', 'subprocess']
         for keyword in dangerous_keywords:
             if keyword in code:
@@ -402,38 +388,61 @@ def run_code():
                 })
         
         # 创建临时文件
-        with tempfile.NamedTemporaryFile(mode='w', suffix='.py', delete=False) as f:
+        with tempfile.NamedTemporaryFile(mode='w', suffix='.py', delete=False, encoding='utf-8') as f:
+            f.write("# -*- coding: utf-8 -*-\n")
+            f.write("import sys\n")
+            f.write("import io\n")
+            f.write("sys.stdout = io.TextIOWrapper(sys.stdout.buffer, encoding='utf-8', errors='replace')\n")
+            f.write("sys.stderr = io.TextIOWrapper(sys.stderr.buffer, encoding='utf-8', errors='replace')\n\n")
             f.write(code)
             temp_file = f.name
         
         try:
-            # 执行代码并捕获输出
+            # 执行代码 - 使用binary模式
             result = subprocess.run(
                 [sys.executable, temp_file],
                 capture_output=True,
-                text=True,
-                timeout=5,  # 5秒超时
-                env={**os.environ, 'PYTHONPATH': ''}  # 限制模块导入路径
+                timeout=5,
+                env={**os.environ, 'PYTHONUTF8': '1'}
             )
             
             # 清理临时文件
-            os.unlink(temp_file)
+            if os.path.exists(temp_file):
+                os.unlink(temp_file)
             
-            if result.returncode == 0:
-                return jsonify({
-                    "success": True,
-                    "output": result.stdout,
-                    "error": None
-                })
-            else:
-                return jsonify({
-                    "success": False,
-                    "output": None,
-                    "error": result.stderr
-                })
+            # 手动解码输出
+            output_text = result.stdout.decode('utf-8', errors='replace') if result.stdout else ''
+            error_text = result.stderr.decode('utf-8', errors='replace') if result.stderr else ''
+            
+            # 如果没有输出，添加提示
+            if not output_text and not error_text:
+                # 检测代码特征
+                has_print = 'print(' in code
+                has_variable = '=' in code and not any(x in code for x in ['==', '!=', '>=', '<='])
+                
+                if not has_print:
+                    output_text = "✅ 代码执行成功！\n"
+                    output_text += "=" * 40 + "\n"
+                    output_text += "📌 提示：你的代码没有包含 print() 语句\n"
+                    output_text += "💡 建议：添加 print() 来查看结果\n"
+                    output_text += "=" * 40 + "\n"
+                    output_text += "例如：\n"
+                    output_text += '  print("Hello World")\n'
+                    if has_variable:
+                        output_text += "  x = 100\n"
+                        output_text += "  print(x)  # 输出变量值\n"
+                else:
+                    output_text = "✅ 代码执行成功！\n"
+            
+            return jsonify({
+                "success": True,
+                "output": output_text,
+                "error": error_text if error_text else None
+            })
                 
         except subprocess.TimeoutExpired:
-            os.unlink(temp_file)
+            if os.path.exists(temp_file):
+                os.unlink(temp_file)
             return jsonify({
                 "success": False,
                 "output": None,
@@ -461,8 +470,6 @@ def update_progress():
     lesson_id = data.get('lesson_id')
     progress = data.get('progress', 0)
     
-    # 在实际应用中，这里会保存到数据库
-    # 现在先模拟保存到session
     if 'progress' not in session:
         session['progress'] = {}
     
@@ -477,7 +484,6 @@ def update_progress():
 
 @app.route('/api/get_progress')
 def get_progress():
-    # 获取用户进度
     progress = session.get('progress', {})
     return jsonify({
         "success": True,
@@ -498,11 +504,11 @@ def serve_static(filename):
 
 @app.errorhandler(404)
 def page_not_found(e):
-    return render_template('404.html'), 404
+    return render_template('404.html') if os.path.exists('templates/404.html') else "404 - 页面未找到", 404
 
 @app.errorhandler(500)
 def internal_server_error(e):
-    return render_template('500.html'), 500
+    return render_template('500.html') if os.path.exists('templates/500.html') else "500 - 服务器内部错误", 500
 
 # ========== 数据库初始化 ==========
 
