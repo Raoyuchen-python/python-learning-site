@@ -329,6 +329,8 @@ for i in range(10):
     ]
 }
 
+# ========== 主要页面路由 ==========
+
 @app.route('/')
 def index():
     return render_template('index.html', data=PYTHON_DATA)
@@ -358,6 +360,31 @@ def exercise_detail(exercise_id):
 @app.route('/tools')
 def tools():
     return render_template('tools.html', tools=PYTHON_DATA['tools'])
+
+# ========== 工具页面路由 ==========
+
+@app.route('/tools/runner')
+def tool_runner():
+    """在线Python运行器工具"""
+    return render_template('tool_runner.html')
+
+@app.route('/tools/formatter')
+def tool_formatter():
+    """代码格式化工具"""
+    # 如果还没有创建这个页面，可以暂时重定向到工具页面
+    # return redirect(url_for('tools'))
+    # 或者创建一个简单的页面
+    return render_template('tool_formatter.html') if os.path.exists('templates/tool_formatter.html') else "工具正在开发中"
+
+@app.route('/tools/cheatsheet')
+def tool_cheatsheet():
+    """Python速查表"""
+    # 如果还没有创建这个页面，可以暂时重定向到工具页面
+    # return redirect(url_for('tools'))
+    # 或者创建一个简单的页面
+    return render_template('tool_cheatsheet.html') if os.path.exists('templates/tool_cheatsheet.html') else "工具正在开发中"
+
+# ========== API接口 ==========
 
 @app.route('/run_code', methods=['POST'])
 def run_code():
@@ -461,16 +488,30 @@ def get_progress():
 def about():
     return render_template('about.html')
 
-# 添加静态文件路由
+# ========== 静态文件路由 ==========
+
 @app.route('/static/<path:filename>')
 def serve_static(filename):
     return send_from_directory('static', filename)
 
-# 初始化数据库
+# ========== 错误处理 ==========
+
+@app.errorhandler(404)
+def page_not_found(e):
+    return render_template('404.html'), 404
+
+@app.errorhandler(500)
+def internal_server_error(e):
+    return render_template('500.html'), 500
+
+# ========== 数据库初始化 ==========
+
 def init_db():
     with app.app_context():
         db.create_all()
         print("数据库已初始化")
+
+# ========== 主程序入口 ==========
 
 if __name__ == '__main__':
     init_db()
