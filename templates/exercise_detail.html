@@ -1,0 +1,233 @@
+{% extends "base.html" %}
+
+{% block title %}{{ exercise.title }} - Python学习网{% endblock %}
+
+{% block content %}
+<div class="container">
+    <nav class="breadcrumb">
+        <a href="{{ url_for('exercises') }}">练习</a> / {{ exercise.title }}
+    </nav>
+    
+    <article class="exercise-content">
+        <header class="exercise-header">
+            <h1>{{ exercise.title }}</h1>
+            <p class="exercise-description">{{ exercise.description }}</p>
+        </header>
+        
+        <div class="questions-list">
+            {% for question in exercise.questions %}
+            <div class="question-card" id="question-{{ question.id }}">
+                <div class="question-header">
+                    <h3>问题 {{ question.id }}:</h3>
+                    <span class="question-status" id="status-{{ question.id }}">未完成</span>
+                </div>
+                <div class="question-body">
+                    <div class="problem-statement">
+                        <p>{{ question.question }}</p>
+                    </div>
+                    
+                    <!-- 代码编辑器区域 -->
+                    <div class="code-editor-section">
+                        <h4>编写你的解决方案：</h4>
+                        <div class="editor-wrapper">
+                            <div class="editor-toolbar">
+                                <button class="btn btn-small run-btn" data-question="{{ question.id }}">
+                                    <i class="fas fa-play"></i> 运行代码
+                                </button>
+                                <button class="btn btn-small reset-btn" data-question="{{ question.id }}">
+                                    <i class="fas fa-redo"></i> 重置代码
+                                </button>
+                                <button class="btn btn-small show-hint" data-question="{{ question.id }}">
+                                    <i class="fas fa-lightbulb"></i> 显示提示
+                                </button>
+                                <button class="btn btn-small show-solution" data-question="{{ question.id }}">
+                                    <i class="fas fa-code"></i> 查看答案
+                                </button>
+                            </div>
+                            
+                            <textarea id="editor-{{ question.id }}" class="code-editor" 
+                                      placeholder="在这里编写你的Python代码..."
+                                      rows="10"># 请在这里编写你的代码
+# 例如：
+print("开始解决问题")</textarea>
+                            
+                            <div class="editor-output" id="output-{{ question.id }}">
+                                <div class="output-header">运行结果</div>
+                                <div class="output-content">
+                                    <!-- 运行结果将显示在这里 -->
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- 提示区域（默认隐藏） -->
+                    <div class="hint-section" id="hint-{{ question.id }}" style="display: none;">
+                        <div class="hint-header">
+                            <strong><i class="fas fa-lightbulb"></i> 提示：</strong>
+                        </div>
+                        <div class="hint-content">
+                            {{ question.hint }}
+                        </div>
+                    </div>
+                    
+                    <!-- 参考答案区域（默认隐藏） -->
+                    <div class="solution-section" id="solution-{{ question.id }}" style="display: none;">
+                        <div class="solution-header">
+                            <strong><i class="fas fa-code"></i> 参考答案：</strong>
+                            <button class="btn btn-small copy-solution" data-code="{{ question.solution }}">
+                                <i class="fas fa-copy"></i> 复制代码
+                            </button>
+                        </div>
+                        <div class="solution-content">
+                            <pre><code>{{ question.solution }}</code></pre>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+        
+        <div class="exercise-navigation">
+            <a href="{{ url_for('exercises') }}" class="btn">
+                <i class="fas fa-arrow-left"></i> 返回练习列表
+            </a>
+            <button class="btn btn-primary" id="submit-all">
+                <i class="fas fa-paper-plane"></i> 提交所有答案
+            </button>
+        </div>
+    </article>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // 为每个问题初始化代码编辑器
+    {% for question in exercise.questions %}
+    (function() {
+        const questionId = {{ question.id }};
+        const editor = document.getElementById(`editor-${questionId}`);
+        const output = document.querySelector(`#output-${questionId} .output-content`);
+        const status = document.getElementById(`status-${questionId}`);
+        const solution = `{{ question.solution|safe }}`;
+        
+        // 设置初始代码（带示例）
+        const initialCode = `# 问题 {{ question.id }}: {{ question.question|truncate(50) }}
+
+# 请在这里编写你的解决方案
+# 示例代码：
+print("开始解决问题 {{ question.id }}")
+
+`;
+        if (!editor.value.trim()) {
+            editor.value = initialCode;
+        }
+        
+        // 运行代码按钮
+        document.querySelector(`.run-btn[data-question="${questionId}"]`).addEventListener('click', function() {
+            runCode(questionId, editor.value);
+        });
+        
+        // 重置代码按钮
+        document.querySelector(`.reset-btn[data-question="${questionId}"]`).addEventListener('click', function() {
+            if (confirm('确定要重置代码吗？所有修改将会丢失。')) {
+                editor.value = initialCode;
+                output.innerHTML = '';
+                status.textContent = '未完成';
+                status.className = 'question-status';
+            }
+        });
+        
+        // 运行代码函数
+        function runCode(qId, code) {
+            output.innerHTML = '<div class="loading">正在运行代码...</div>';
+            
+            // 在实际应用中，这里会发送到后端执行
+            // 由于安全考虑，我们模拟执行
+            setTimeout(() => {
+                // 简单检查代码是否包含必要元素
+                let result = '';
+                let success = true;
+                
+                if (code.includes('print')) {
+                    result = '代码运行成功！\n';
+                    result += '输出示例：\n';
+                    result += '开始解决问题\n';
+                    result += '解决方案执行中...\n';
+                    result += '✓ 测试通过\n';
+                    
+                    // 更新状态
+                    status.textContent = '已完成';
+                    status.className = 'question-status completed';
+                } else {
+                    result = '请确保代码中包含输出语句（print）来查看结果。';
+                    success = false;
+                }
+                
+                if (success) {
+                    output.innerHTML = `<pre class="success">${result}</pre>`;
+                } else {
+                    output.innerHTML = `<pre class="error">${result}</pre>`;
+                }
+            }, 1000);
+        }
+    })();
+    {% endfor %}
+    
+    // 显示提示
+    document.querySelectorAll('.show-hint').forEach(button => {
+        button.addEventListener('click', function() {
+            const questionId = this.dataset.question;
+            const hintSection = document.getElementById(`hint-${questionId}`);
+            hintSection.style.display = 'block';
+            this.disabled = true;
+            this.innerHTML = '<i class="fas fa-lightbulb"></i> 提示已显示';
+        });
+    });
+    
+    // 显示答案
+    document.querySelectorAll('.show-solution').forEach(button => {
+        button.addEventListener('click', function() {
+            const questionId = this.dataset.question;
+            const solutionSection = document.getElementById(`solution-${questionId}`);
+            solutionSection.style.display = 'block';
+            this.disabled = true;
+            this.innerHTML = '<i class="fas fa-code"></i> 答案已显示';
+        });
+    });
+    
+    // 复制答案代码
+    document.querySelectorAll('.copy-solution').forEach(button => {
+        button.addEventListener('click', function() {
+            const code = this.dataset.code;
+            navigator.clipboard.writeText(code)
+                .then(() => {
+                    const originalText = this.innerHTML;
+                    this.innerHTML = '<i class="fas fa-check"></i> 已复制';
+                    setTimeout(() => {
+                        this.innerHTML = originalText;
+                    }, 2000);
+                });
+        });
+    });
+    
+    // 提交所有答案
+    document.getElementById('submit-all').addEventListener('click', function() {
+        let completed = 0;
+        const total = {{ exercise.questions|length }};
+        
+        // 检查每个问题的状态
+        for (let i = 1; i <= total; i++) {
+            const status = document.getElementById(`status-${i}`);
+            if (status && status.textContent === '已完成') {
+                completed++;
+            }
+        }
+        
+        if (completed === total) {
+            alert(`🎉 恭喜！你已完成所有 ${total} 个问题！`);
+        } else {
+            alert(`你已完成 ${completed}/${total} 个问题。继续加油！`);
+        }
+    });
+});
+</script>
+{% endblock %}

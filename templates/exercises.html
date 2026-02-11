@@ -1,0 +1,28 @@
+{% extends "base.html" %}
+
+{% block title %}练习 - Python学习网{% endblock %}
+
+{% block content %}
+<div class="container">
+    <h1>Python练习题</h1>
+    <p class="subtitle">通过练习巩固所学知识</p>
+    
+    <div class="exercises-grid">
+        {% for exercise in exercises %}
+        <div class="exercise-card">
+            <div class="exercise-header">
+                <span class="level">练习 {{ exercise.id }}</span>
+                <span class="questions"><i class="fas fa-question-circle"></i> {{ exercise.questions|length }} 个问题</span>
+            </div>
+            <h3>{{ exercise.title }}</h3>
+            <p>{{ exercise.description }}</p>
+            <div class="exercise-footer">
+                <a href="{{ url_for('exercise_detail', exercise_id=exercise.id) }}" class="btn">
+                    开始练习 <i class="fas fa-arrow-right"></i>
+                </a>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+</div>
+{% endblock %}

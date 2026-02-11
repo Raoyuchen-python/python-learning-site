@@ -1,0 +1,101 @@
+{% extends "base.html" %}
+
+{% block title %}关于 - Python学习网{% endblock %}
+
+{% block content %}
+<div class="container">
+    <div class="about-content">
+        <h1>关于Python学习网</h1>
+        
+        <section class="about-section">
+            <h2>我们的使命</h2>
+            <p>Python学习网致力于为所有想要学习Python编程的人提供免费、高质量的学习资源。我们相信编程教育应该是开放和可访问的。</p>
+        </section>
+        
+        <section class="about-section">
+            <h2>网站特色</h2>
+            <div class="features-list">
+                <div class="feature-item">
+                    <i class="fas fa-lock-open"></i>
+                    <h3>完全免费</h3>
+                    <p>所有内容永久免费，无任何收费计划</p>
+                </div>
+                <div class="feature-item">
+                    <i class="fas fa-book"></i>
+                    <h3>系统化课程</h3>
+                    <p>从入门到进阶，循序渐进的学习路径</p>
+                </div>
+                <div class="feature-item">
+                    <i class="fas fa-code"></i>
+                    <h3>实践导向</h3>
+                    <p>大量实际练习和项目，巩固学习效果</p>
+                </div>
+                <div class="feature-item">
+                    <i class="fas fa-tools"></i>
+                    <h3>在线工具</h3>
+                    <p>内置代码编辑器和实用工具，边学边练</p>
+                </div>
+            </div>
+        </section>
+        
+        <section class="about-section">
+            <h2>学习路径</h2>
+            <div class="learning-timeline">
+                <div class="timeline-item">
+                    <div class="timeline-date">阶段 1</div>
+                    <div class="timeline-content">
+                        <h3>Python基础</h3>
+                        <p>变量、数据类型、基本语法、控制流程</p>
+                    </div>
+                </div>
+                <div class="timeline-item">
+                    <div class="timeline-date">阶段 2</div>
+                    <div class="timeline-content">
+                        <h3>核心概念</h3>
+                        <p>函数、模块、面向对象编程、异常处理</p>
+                    </div>
+                </div>
+                <div class="timeline-item">
+                    <div class="timeline-date">阶段 3</div>
+                    <div class="timeline-content">
+                        <h3>进阶应用</h3>
+                        <p>文件操作、数据库、Web开发、数据分析</p>
+                    </div>
+                </div>
+                <div class="timeline-item">
+                    <div class="timeline-date">阶段 4</div>
+                    <div class="timeline-content">
+                        <h3>项目实战</h3>
+                        <p>实际项目开发，巩固所学知识</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+        
+        <section class="about-section">
+            <h2>适合人群</h2>
+            <ul class="audience-list">
+                <li><i class="fas fa-user-graduate"></i> 编程初学者</li>
+                <li><i class="fas fa-briefcase"></i> 想转行程序员的人</li>
+                <li><i class="fas fa-chart-line"></i> 数据分析师</li>
+                <li><i class="fas fa-robot"></i> 人工智能爱好者</li>
+                <li><i class="fas fa-globe"></i> 网络开发人员</li>
+                <li><i class="fas fa-school"></i> 学生和教育工作者</li>
+            </ul>
+        </section>
+        
+        <section class="about-section">
+            <h2>开始学习</h2>
+            <p>无论你是完全的编程新手，还是有一定经验的开发者，Python学习网都能为你提供有价值的学习资源。</p>
+            <div class="cta-buttons">
+                <a href="{{ url_for('lessons') }}" class="btn btn-primary btn-large">
+                    <i class="fas fa-play-circle"></i> 立即开始学习
+                </a>
+                <a href="{{ url_for('exercises') }}" class="btn btn-secondary btn-large">
+                    <i class="fas fa-pen"></i> 做练习题
+                </a>
+            </div>
+        </section>
+    </div>
+</div>
+{% endblock %}

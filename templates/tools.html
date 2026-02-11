@@ -1,0 +1,114 @@
+{% extends "base.html" %}
+
+{% block title %}工具 - Python学习网{% endblock %}
+
+{% block content %}
+<div class="container">
+    <h1>Python编程工具</h1>
+    <p class="subtitle">在线工具助您更好地学习Python</p>
+    
+    <div class="tools-grid">
+        {% for tool in tools %}
+        <div class="tool-card">
+            <div class="tool-icon">
+                <i class="fas fa-code"></i>
+            </div>
+            <h3>{{ tool.name }}</h3>
+            <p>{{ tool.description }}</p>
+            <a href="{{ tool.url }}" class="btn">
+                <i class="fas fa-external-link-alt"></i> 使用工具
+            </a>
+        </div>
+        {% endfor %}
+    </div>
+    
+    <div class="online-editor">
+        <h2>在线Python编辑器</h2>
+        <div class="editor-container">
+            <div class="editor-header">
+                <span>Python代码编辑器</span>
+                <div class="editor-actions">
+                    <button class="btn btn-small" id="format-code">
+                        <i class="fas fa-indent"></i> 格式化
+                    </button>
+                    <button class="btn btn-small btn-primary" id="run-code">
+                        <i class="fas fa-play"></i> 运行代码
+                    </button>
+                    <button class="btn btn-small" id="clear-code">
+                        <i class="fas fa-trash"></i> 清空
+                    </button>
+                </div>
+            </div>
+            <textarea id="python-code" class="code-editor" placeholder="在这里输入你的Python代码...">print("Hello, Python!")
+print("欢迎使用在线Python编辑器")
+
+# 尝试计算斐波那契数列
+def fibonacci(n):
+    if n <= 1:
+        return n
+    else:
+        return fibonacci(n-1) + fibonacci(n-2)
+
+print("斐波那契数列前10项:")
+for i in range(10):
+    print(f"fib({i}) = {fibonacci(i)}")</textarea>
+            <div class="editor-output" id="code-output">
+                <div class="output-header">运行结果</div>
+                <div class="output-content" id="output-content">
+                    <!-- 运行结果将显示在这里 -->
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const codeEditor = document.getElementById('python-code');
+    const runButton = document.getElementById('run-code');
+    const clearButton = document.getElementById('clear-code');
+    const formatButton = document.getElementById('format-code');
+    const outputContent = document.getElementById('output-content');
+    
+    // 运行代码
+    runButton.addEventListener('click', function() {
+        const code = codeEditor.value;
+        outputContent.innerHTML = '<div class="loading">正在运行代码...</div>';
+        
+        fetch('/run_code', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ code: code })
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                outputContent.innerHTML = `<pre>${data.output}</pre>`;
+            } else {
+                outputContent.innerHTML = `<pre class="error">错误：${data.error}</pre>`;
+            }
+        })
+        .catch(error => {
+            outputContent.innerHTML = `<pre class="error">请求失败：${error.message}</pre>`;
+        });
+    });
+    
+    // 清空代码
+    clearButton.addEventListener('click', function() {
+        codeEditor.value = '';
+        outputContent.innerHTML = '';
+    });
+    
+    // 格式化代码（简单示例）
+    formatButton.addEventListener('click', function() {
+        let code = codeEditor.value;
+        // 简单的格式化：添加适当的缩进
+        code = code.replace(/    /g, '\t'); // 将4个空格转换为制表符
+        codeEditor.value = code;
+        outputContent.innerHTML = '<pre>代码已格式化（基础功能）</pre>';
+    });
+});
+</script>
+{% endblock %}

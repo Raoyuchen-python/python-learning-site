@@ -1,0 +1,68 @@
+{% extends "base.html" %}
+
+{% block title %}首页 - Python学习网{% endblock %}
+
+{% block content %}
+<div class="hero">
+    <div class="container">
+        <h1>免费学习Python编程</h1>
+        <p>从零开始，循序渐进掌握Python编程技能</p>
+        <div class="hero-buttons">
+            <a href="{{ url_for('lessons') }}" class="btn btn-primary">开始学习</a>
+            <a href="{{ url_for('exercises') }}" class="btn btn-secondary">做练习题</a>
+        </div>
+    </div>
+</div>
+
+<div class="container">
+    <section class="features">
+        <h2>为什么选择我们？</h2>
+        <div class="features-grid">
+            <div class="feature-card">
+                <i class="fas fa-graduation-cap"></i>
+                <h3>完全免费</h3>
+                <p>所有教程、练习和资源都完全免费，无任何隐藏费用</p>
+            </div>
+            <div class="feature-card">
+                <i class="fas fa-code"></i>
+                <h3>实践驱动</h3>
+                <p>通过大量实际编码练习巩固学习成果</p>
+            </div>
+            <div class="feature-card">
+                <i class="fas fa-road"></i>
+                <h3>系统化学习路径</h3>
+                <p>从基础到进阶，科学规划学习路线</p>
+            </div>
+            <div class="feature-card">
+                <i class="fas fa-rocket"></i>
+                <h3>互动工具</h3>
+                <p>在线代码编辑器，随时随地练习编程</p>
+            </div>
+        </div>
+    </section>
+
+    <section class="learning-path">
+        <h2>学习路径</h2>
+        <div class="path-steps">
+            <div class="path-step">
+                <span class="step-number">1</span>
+                <h3>Python基础</h3>
+                <p>变量、数据类型、运算符</p>
+                <a href="{{ url_for('lesson_detail', lesson_id=1) }}" class="btn btn-small">开始学习</a>
+            </div>
+            <div class="path-step">
+                <span class="step-number">2</span>
+                <h3>控制流程</h3>
+                <p>条件判断和循环</p>
+                <a href="{{ url_for('lesson_detail', lesson_id=2) }}" class="btn btn-small">开始学习</a>
+            </div>
+            <div class="path-step">
+                <span class="step-number">3</span>
+                <h3>函数和模块</h3>
+                <p>代码组织和复用</p>
+                <a href="{{ url_for('lesson_detail', lesson_id=3) }}" class="btn btn-small">开始学习</a>
+            </div>
+        </div>
+    </section>
+</div>
+{% endblock %}

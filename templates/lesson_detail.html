@@ -1,0 +1,58 @@
+{% extends "base.html" %}
+
+{% block title %}{{ lesson.title }} - Python学习网{% endblock %}
+
+{% block content %}
+<div class="container">
+    <nav class="breadcrumb">
+        <a href="{{ url_for('lessons') }}">教程</a> / {{ lesson.title }}
+    </nav>
+    
+    <article class="lesson-content">
+        <header class="lesson-header">
+            <h1>{{ lesson.title }}</h1>
+            <div class="lesson-meta">
+                <span class="difficulty {{ lesson.difficulty|lower }}">{{ lesson.difficulty }}</span>
+                <span class="duration"><i class="far fa-clock"></i> {{ lesson.duration }}</span>
+            </div>
+        </header>
+        
+        <div class="content">
+            {{ lesson.content|safe }}
+        </div>
+        
+        <div class="lesson-navigation">
+            <button class="btn" onclick="updateProgress()">
+                <i class="fas fa-check"></i> 标记为完成
+            </button>
+            <div class="nav-buttons">
+                <a href="{{ url_for('exercises') }}" class="btn btn-secondary">
+                    做练习题 <i class="fas fa-pen"></i>
+                </a>
+                <a href="{{ url_for('lessons') }}" class="btn">
+                    返回教程列表 <i class="fas fa-list"></i>
+                </a>
+            </div>
+        </div>
+    </article>
+</div>
+
+<script>
+function updateProgress() {
+    fetch('/api/progress', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+            lesson_id: {{ lesson.id }},
+            progress: 100
+        })
+    })
+    .then(response => response.json())
+    .then(data => {
+        alert('恭喜！课程已完成！');
+    });
+}
+</script>
+{% endblock %}
