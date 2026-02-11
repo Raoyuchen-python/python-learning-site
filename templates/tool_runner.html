@@ -1,0 +1,301 @@
+{% extends "base.html" %}
+
+{% block title %}在线Python运行器 - Python学习网{% endblock %}
+
+{% block content %}
+<div class="container">
+    <nav class="breadcrumb">
+        <a href="{{ url_for('tools') }}">工具</a> / 在线Python运行器
+    </nav>
+    
+    <div class="tool-content">
+        <h1>在线Python运行器</h1>
+        <p class="subtitle">直接在浏览器中编写和运行Python代码</p>
+        
+        <div class="online-editor">
+            <div class="editor-container">
+                <div class="editor-header">
+                    <span>Python代码编辑器</span>
+                    <div class="editor-actions">
+                        <button class="btn btn-small" id="format-code">
+                            <i class="fas fa-indent"></i> 格式化
+                        </button>
+                        <button class="btn btn-small btn-primary" id="run-code">
+                            <i class="fas fa-play"></i> 运行代码
+                        </button>
+                        <button class="btn btn-small" id="clear-code">
+                            <i class="fas fa-trash"></i> 清空
+                        </button>
+                        <button class="btn btn-small" id="save-code">
+                            <i class="fas fa-save"></i> 保存
+                        </button>
+                    </div>
+                </div>
+                <textarea id="python-code" class="code-editor" placeholder="在这里输入你的Python代码..." rows="15"># 欢迎使用在线Python运行器！
+# 在这里编写你的Python代码，然后点击"运行代码"按钮
+
+print("Hello, Python学习者！")
+print("=" * 40)
+
+# 示例：计算斐波那契数列
+def fibonacci(n):
+    """计算斐波那契数列的第n项"""
+    if n <= 0:
+        return 0
+    elif n == 1:
+        return 1
+    else:
+        a, b = 0, 1
+        for _ in range(2, n + 1):
+            a, b = b, a + b
+        return b
+
+print("斐波那契数列前15项：")
+for i in range(1, 16):
+    print(f"F({i:2d}) = {fibonacci(i):4d}")
+
+print("=" * 40)
+print("尝试修改上面的代码，然后运行看看效果！")</textarea>
+                
+                <div class="editor-controls">
+                    <div class="control-group">
+                        <label for="timeout">执行超时（秒）:</label>
+                        <select id="timeout">
+                            <option value="2">2秒</option>
+                            <option value="5" selected>5秒</option>
+                            <option value="10">10秒</option>
+                            <option value="30">30秒</option>
+                        </select>
+                    </div>
+                    
+                    <div class="control-group">
+                        <label for="theme">编辑器主题:</label>
+                        <select id="theme">
+                            <option value="light" selected>明亮</option>
+                            <option value="dark">暗黑</option>
+                        </select>
+                    </div>
+                </div>
+                
+                <div class="editor-output" id="code-output">
+                    <div class="output-header">
+                        <span>运行结果</span>
+                        <div class="output-actions">
+                            <button class="btn btn-small" id="copy-output">
+                                <i class="fas fa-copy"></i> 复制结果
+                            </button>
+                            <button class="btn btn-small" id="clear-output">
+                                <i class="fas fa-times"></i> 清空结果
+                            </button>
+                        </div>
+                    </div>
+                    <div class="output-content" id="output-content">
+                        <!-- 运行结果将显示在这里 -->
+                        <div class="welcome-message">
+                            <p>👋 欢迎使用在线Python运行器！</p>
+                            <p>在这里你可以：</p>
+                            <ul>
+                                <li>编写和运行Python代码</li>
+                                <li>测试代码片段</li>
+                                <li>学习Python语法</li>
+                                <li>调试程序</li>
+                            </ul>
+                            <p>点击"运行代码"按钮开始！</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="feature-cards">
+            <div class="feature-card">
+                <i class="fas fa-shield-alt"></i>
+                <h3>安全运行</h3>
+                <p>代码在安全的沙箱环境中执行，不会影响服务器</p>
+            </div>
+            <div class="feature-card">
+                <i class="fas fa-bolt"></i>
+                <h3>快速响应</h3>
+                <p>代码执行快速，支持5秒超时保护</p>
+            </div>
+            <div class="feature-card">
+                <i class="fas fa-code"></i>
+                <h3>实时反馈</h3>
+                <p>立即看到代码执行结果和错误信息</p>
+            </div>
+        </div>
+        
+        <div class="code-examples">
+            <h3>代码示例</h3>
+            <div class="examples-grid">
+                <div class="example-card">
+                    <h4>基本输入输出</h4>
+                    <pre><code>name = input("请输入你的名字: ")
+print(f"你好, {name}!")
+age = int(input("请输入你的年龄: "))
+print(f"明年你就{age + 1}岁了")</code></pre>
+                    <button class="btn btn-small load-example" data-code="name = input(&quot;请输入你的名字: &quot;)&#10;print(f&quot;你好, {name}!&quot;)&#10;age = int(input(&quot;请输入你的年龄: &quot;))&#10;print(f&quot;明年你就{age + 1}岁了&quot;)">
+                        加载示例
+                    </button>
+                </div>
+                <div class="example-card">
+                    <h4>列表操作</h4>
+                    <pre><code># 创建列表
+fruits = ['苹果', '香蕉', '橙子', '葡萄']
+print("水果列表:", fruits)
+
+# 添加元素
+fruits.append('西瓜')
+print("添加后:", fruits)
+
+# 遍历列表
+for i, fruit in enumerate(fruits, 1):
+    print(f"{i}. {fruit}")</code></pre>
+                    <button class="btn btn-small load-example" data-code="# 创建列表&#10;fruits = ['苹果', '香蕉', '橙子', '葡萄']&#10;print(&quot;水果列表:&quot;, fruits)&#10;&#10;# 添加元素&#10;fruits.append('西瓜')&#10;print(&quot;添加后:&quot;, fruits)&#10;&#10;# 遍历列表&#10;for i, fruit in enumerate(fruits, 1):&#10;    print(f&quot;{i}. {fruit}&quot;)">
+                        加载示例
+                    </button>
+                </div>
+                <div class="example-card">
+                    <h4>文件操作</h4>
+                    <pre><code># 写入文件
+with open('test.txt', 'w', encoding='utf-8') as f:
+    f.write("这是测试文件内容\\n")
+    f.write("第二行内容\\n")
+print("文件写入完成")
+
+# 读取文件
+with open('test.txt', 'r', encoding='utf-8') as f:
+    content = f.read()
+print("文件内容:\\n", content)</code></pre>
+                    <button class="btn btn-small load-example" data-code="# 写入文件&#10;with open('test.txt', 'w', encoding='utf-8') as f:&#10;    f.write(&quot;这是测试文件内容\\n&quot;)&#10;    f.write(&quot;第二行内容\\n&quot;)&#10;print(&quot;文件写入完成&quot;)&#10;&#10;# 读取文件&#10;with open('test.txt', 'r', encoding='utf-8') as f:&#10;    content = f.read()&#10;print(&quot;文件内容:\\n&quot;, content)">
+                        加载示例
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const codeEditor = document.getElementById('python-code');
+    const runButton = document.getElementById('run-code');
+    const clearButton = document.getElementById('clear-code');
+    const formatButton = document.getElementById('format-code');
+    const saveButton = document.getElementById('save-code');
+    const copyOutputButton = document.getElementById('copy-output');
+    const clearOutputButton = document.getElementById('clear-output');
+    const outputContent = document.getElementById('output-content');
+    const timeoutSelect = document.getElementById('timeout');
+    const themeSelect = document.getElementById('theme');
+    
+    // 运行代码
+    runButton.addEventListener('click', function() {
+        const code = codeEditor.value;
+        const timeout = parseInt(timeoutSelect.value);
+        
+        outputContent.innerHTML = '<div class="loading">正在运行代码...</div>';
+        
+        fetch('/run_code', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ 
+                code: code,
+                timeout: timeout
+            })
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                outputContent.innerHTML = `<pre class="success">${data.output || '代码执行成功，但没有输出'}</pre>`;
+            } else {
+                outputContent.innerHTML = `<pre class="error">错误：${data.error || '未知错误'}</pre>`;
+            }
+        })
+        .catch(error => {
+            outputContent.innerHTML = `<pre class="error">请求失败：${error.message}</pre>`;
+        });
+    });
+    
+    // 清空代码
+    clearButton.addEventListener('click', function() {
+        if (confirm('确定要清空代码编辑器吗？')) {
+            codeEditor.value = '';
+            outputContent.innerHTML = '<div class="welcome-message">代码已清空</div>';
+        }
+    });
+    
+    // 格式化代码（简单示例）
+    formatButton.addEventListener('click', function() {
+        let code = codeEditor.value;
+        // 简单的格式化：确保缩进一致
+        code = code.replace(/\t/g, '    '); // 制表符转4个空格
+        codeEditor.value = code;
+        outputContent.innerHTML = '<pre class="success">代码已格式化（基础功能）</pre>';
+    });
+    
+    // 保存代码（本地存储）
+    saveButton.addEventListener('click', function() {
+        const code = codeEditor.value;
+        try {
+            localStorage.setItem('python_runner_code', code);
+            outputContent.innerHTML = '<pre class="success">代码已保存到本地存储</pre>';
+        } catch (e) {
+            outputContent.innerHTML = `<pre class="error">保存失败：${e.message}</pre>`;
+        }
+    });
+    
+    // 加载保存的代码
+    window.addEventListener('load', function() {
+        const savedCode = localStorage.getItem('python_runner_code');
+        if (savedCode) {
+            codeEditor.value = savedCode;
+        }
+    });
+    
+    // 复制输出结果
+    copyOutputButton.addEventListener('click', function() {
+        const outputText = outputContent.textContent;
+        navigator.clipboard.writeText(outputText)
+            .then(() => {
+                alert('输出结果已复制到剪贴板');
+            })
+            .catch(err => {
+                console.error('复制失败:', err);
+            });
+    });
+    
+    // 清空输出结果
+    clearOutputButton.addEventListener('click', function() {
+        outputContent.innerHTML = '<div class="welcome-message">输出已清空</div>';
+    });
+    
+    // 切换主题
+    themeSelect.addEventListener('change', function() {
+        const theme = this.value;
+        if (theme === 'dark') {
+            codeEditor.style.backgroundColor = '#1e1e1e';
+            codeEditor.style.color = '#d4d4d4';
+        } else {
+            codeEditor.style.backgroundColor = 'white';
+            codeEditor.style.color = '#333';
+        }
+    });
+    
+    // 加载示例代码
+    document.querySelectorAll('.load-example').forEach(button => {
+        button.addEventListener('click', function() {
+            const code = this.dataset.code;
+            // 解码HTML实体
+            const decodedCode = code.replace(/&#10;/g, '\n')
+                                   .replace(/&quot;/g, '"')
+                                   .replace(/&#39;/g, "'");
+            codeEditor.value = decodedCode;
+            outputContent.innerHTML = '<div class="success">示例代码已加载，点击"运行代码"测试</div>';
+        });
+    });
+});
+</script>
+{% endblock %}
