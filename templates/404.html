@@ -1,0 +1,21 @@
+{% extends "base.html" %}
+
+{% block title %}页面未找到 - Python学习网{% endblock %}
+
+{% block content %}
+<div class="container">
+    <div class="error-page">
+        <h1>404 - 页面未找到</h1>
+        <p>抱歉，您访问的页面不存在。</p>
+        <p>可能是链接有误或页面已被移除。</p>
+        <div class="error-actions">
+            <a href="{{ url_for('index') }}" class="btn btn-primary">
+                <i class="fas fa-home"></i> 返回首页
+            </a>
+            <a href="{{ url_for('lessons') }}" class="btn">
+                <i class="fas fa-book"></i> 查看课程
+            </a>
+        </div>
+    </div>
+</div>
+{% endblock %}
