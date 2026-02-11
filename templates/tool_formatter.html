@@ -1,0 +1,119 @@
+{% extends "base.html" %}
+
+{% block title %}代码格式化工具 - Python学习网{% endblock %}
+
+{% block content %}
+<div class="container">
+    <nav class="breadcrumb">
+        <a href="{{ url_for('tools') }}">工具</a> / 代码格式化工具
+    </nav>
+    
+    <div class="tool-content">
+        <h1>Python代码格式化工具</h1>
+        <p class="subtitle">格式化Python代码，使其符合PEP8规范</p>
+        
+        <div class="formatter-container">
+            <div class="editor-row">
+                <div class="editor-column">
+                    <div class="editor-header">
+                        <span>输入Python代码</span>
+                    </div>
+                    <textarea id="input-code" class="code-editor" placeholder="粘贴需要格式化的Python代码..." rows="15"># 未格式化的示例代码
+def example_function(param1,param2):
+    result=param1+param2
+    if result>10:
+        print("结果大于10")
+    else:
+        print("结果小于等于10")
+    return result
+
+# 调用函数
+x=example_function(5,7)
+print(f"计算结果: {x}")</textarea>
+                </div>
+                <div class="editor-column">
+                    <div class="editor-header">
+                        <span>格式化后的代码</span>
+                    </div>
+                    <textarea id="output-code" class="code-editor" placeholder="格式化后的代码将显示在这里..." rows="15" readonly></textarea>
+                </div>
+            </div>
+            
+            <div class="formatter-actions">
+                <button class="btn btn-primary" id="format-btn">
+                    <i class="fas fa-magic"></i> 格式化代码
+                </button>
+                <button class="btn" id="copy-output">
+                    <i class="fas fa-copy"></i> 复制结果
+                </button>
+                <button class="btn" id="clear-all">
+                    <i class="fas fa-trash"></i> 清空
+                </button>
+            </div>
+            
+            <div class="formatter-info">
+                <h3>PEP8代码规范要点：</h3>
+                <ul>
+                    <li>使用4个空格缩进（不要用制表符）</li>
+                    <li>每行最大79个字符</li>
+                    <li>函数和类定义之间空两行</li>
+                    <li>导入语句放在文件顶部，按标准库、第三方库、本地库分组</li>
+                    <li>使用有意义的变量名，小写字母加下划线（snake_case）</li>
+                    <li>在运算符前后和逗号后添加空格</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const inputCode = document.getElementById('input-code');
+    const outputCode = document.getElementById('output-code');
+    const formatBtn = document.getElementById('format-btn');
+    const copyBtn = document.getElementById('copy-output');
+    const clearBtn = document.getElementById('clear-all');
+    
+    // 格式化代码
+    formatBtn.addEventListener('click', function() {
+        const code = inputCode.value;
+        
+        // 简单的格式化逻辑（实际应用中应该使用black或autopep8）
+        let formatted = code;
+        
+        // 1. 添加适当的缩进
+        formatted = formatted.replace(/\t/g, '    ');
+        
+        // 2. 在运算符周围添加空格
+        formatted = formatted.replace(/([=+\-*/%<>!]=?|[+\-*/])(?![ =\n])/g, ' $1 ');
+        formatted = formatted.replace(/  +/g, ' ');
+        
+        // 3. 在逗号后添加空格
+        formatted = formatted.replace(/,(\S)/g, ', $1');
+        
+        // 4. 函数定义后添加空行
+        formatted = formatted.replace(/\):\n(?!\n)/g, '):\n\n');
+        
+        outputCode.value = formatted;
+    });
+    
+    // 复制结果
+    copyBtn.addEventListener('click', function() {
+        outputCode.select();
+        document.execCommand('copy');
+        alert('代码已复制到剪贴板');
+    });
+    
+    // 清空
+    clearBtn.addEventListener('click', function() {
+        if (confirm('确定要清空所有内容吗？')) {
+            inputCode.value = '';
+            outputCode.value = '';
+        }
+    });
+    
+    // 初始格式化
+    formatBtn.click();
+});
+</script>
+{% endblock %}
